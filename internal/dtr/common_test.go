@@ -18,35 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main
+package dtr_test
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"os"
+	"strings"
 
-	"github.com/gonvenience/bunt"
-	"github.com/gonvenience/neat"
-	"github.com/homeport/duct-tape-resource/internal/dtr"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	. "github.com/homeport/duct-tape-resource/internal/dtr"
 )
 
-func main() {
-	result, err := dtr.Check(os.Stdin)
-	if err != nil {
-		fmt.Fprint(os.Stderr, neat.ContentBox(
-			"Failed to run check",
-			err.Error(),
-			neat.HeadlineColor(bunt.LightCoral),
-		))
-
-		os.Exit(1)
-	}
-
-	out, err := json.Marshal(result)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Print(string(out))
-}
+var _ = Describe("Common", func() {
+	Context("invalid configuration", func() {
+		It("fail in case the configuration is not valid JSON", func() {
+			_, err := LoadConfig(strings.NewReader("stuff"))
+			Expect(err).To(HaveOccurred())
+		})
+	})
+})

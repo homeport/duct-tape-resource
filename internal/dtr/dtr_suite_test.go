@@ -21,13 +21,24 @@
 package dtr_test
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	. "github.com/homeport/duct-tape-resource/internal/dtr"
 )
 
 func TestDtr(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Duct Tape Resource Suite")
+}
+
+func feed(config Config) io.Reader {
+	data, err := json.Marshal(config)
+	Expect(err).ToNot(HaveOccurred())
+	return bytes.NewReader(data)
 }

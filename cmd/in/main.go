@@ -32,10 +32,10 @@ import (
 )
 
 func main() {
-	result, err := dtr.Check(os.Stdin)
+	result, err := dtr.In(os.Stdin)
 	if err != nil {
 		fmt.Fprint(os.Stderr, neat.ContentBox(
-			"Failed to run check",
+			"Failed to run in",
 			err.Error(),
 			neat.HeadlineColor(bunt.LightCoral),
 		))

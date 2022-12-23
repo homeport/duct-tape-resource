@@ -1,0 +1,33 @@
+---
+name: Release Duct Tape Resource Image
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  image:
+    if: ${{ github.repository == 'homeport/duct-tape-resource' }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    env:
+      IMAGE_HOST: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and push container image
+      env:
+        REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        REGISTRY_USERNAME: ${{ github.repository_owner }}
+      run: |
+        docker login \
+          --username "$REGISTRY_USERNAME" \
+          --password-stdin \
+          "$IMAGE_HOST" <<<"$REGISTRY_PASSWORD"
+
+        docker build --tag "${IMAGE_HOST}/${IMAGE_NAME}:latest" .
+        docker push "${IMAGE_HOST}/${IMAGE_NAME}:latest"

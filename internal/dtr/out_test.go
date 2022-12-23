@@ -18,35 +18,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main
+package dtr_test
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"os"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
-	"github.com/gonvenience/bunt"
-	"github.com/gonvenience/neat"
-	"github.com/homeport/duct-tape-resource/internal/dtr"
+	. "github.com/homeport/duct-tape-resource/internal/dtr"
 )
 
-func main() {
-	result, err := dtr.Check(os.Stdin)
-	if err != nil {
-		fmt.Fprint(os.Stderr, neat.ContentBox(
-			"Failed to run check",
-			err.Error(),
-			neat.HeadlineColor(bunt.LightCoral),
-		))
+var _ = Describe("Out", func() {
+	Context("valid configuration", func() {
+		It("should return the given version", func() {
+			version := Version{"ref": "foobar"}
+			result, err := Out(feed(Config{
+				Source: Source{
+					Out: Custom{Run: "true"},
+				},
+				Version: version,
+			}))
 
-		os.Exit(1)
-	}
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Version).To(Equal(version))
+		})
 
-	out, err := json.Marshal(result)
-	if err != nil {
-		log.Fatal(err)
-	}
+		It("should return the given version and metadata if output was available", func() {
+			version := Version{"ref": "foobar"}
+			result, err := Out(feed(Config{
+				Source: Source{
+					Out: Custom{Run: "echo foo bar && echo bar foo"},
+				},
+				Version: version,
+			}))
 
-	fmt.Print(string(out))
-}
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Version).To(Equal(version))
+			Expect(result.Metadata).To(Equal([]Metadata{
+				{Name: "foo", Value: "bar"},
+				{Name: "bar", Value: "foo"},
+			}))
+		})
+	})
+})

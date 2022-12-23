@@ -23,12 +23,99 @@ package dtr_test
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	. "github.com/homeport/duct-tape-resource/internal/dtr"
 )
 
 var _ = Describe("Check", func() {
-	Context("TBD", func() {
-		It("TBD", func() {
-			Expect(true).To(BeTrue())
+	Context("invalid configuration", func() {
+		It("should fail if not run command is configured", func() {
+			_, err := Check(feed(Config{}))
+			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Context("valid configuration", func() {
+		It("should just fail nicely if the provided command returns with non-zero exit code", func() {
+			_, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{Run: "false"},
+				},
+			}))
+
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail when no line is return by run", func() {
+			_, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{Run: "true"},
+				},
+			}))
+
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should return two versions when two lines are returned", func() {
+			result, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{Run: "echo foobar && echo barfoo"},
+				},
+			}))
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(Equal(CheckResult{
+				Version{"ref": "foobar"},
+				Version{"ref": "barfoo"},
+			}))
+		})
+
+		It("should run before commands before returning a version", func() {
+			result, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{
+						Before: "echo foobar >/tmp/version",
+						Run:    "cat /tmp/version",
+					},
+				},
+			}))
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(Equal(CheckResult{
+				Version{"ref": "foobar"},
+			}))
+		})
+
+		It("should just fail nicely if the provided before command return with non-zero exit code", func() {
+			_, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{
+						Before: "false",
+						Run:    "true",
+					},
+				},
+			}))
+
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should set environment variables that can be used in run", func() {
+			result, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{
+						Env: map[string]string{
+							"FOO": "foo",
+							"BAR": "bar",
+						},
+						Run: "echo ${FOO}${BAR}",
+					},
+				},
+			}))
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(Equal(CheckResult{
+				Version{"ref": "foobar"},
+			}))
 		})
 	})
 })

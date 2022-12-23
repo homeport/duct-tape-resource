@@ -19,3 +19,31 @@
 // THE SOFTWARE.
 
 package dtr
+
+import (
+	"fmt"
+	"io"
+)
+
+func Check(in io.Reader) (CheckResult, error) {
+	config, err := LoadConfig(in)
+	if err != nil {
+		return nil, err
+	}
+
+	output, err := execute(config.Source.Check)
+	if err != nil {
+		return nil, err
+	}
+
+	var result CheckResult
+	for _, entry := range output {
+		result = append(result, Version{config.Source.ID: entry})
+	}
+
+	if len(result) == 0 {
+		return nil, fmt.Errorf("run command returned no output")
+	}
+
+	return result, nil
+}

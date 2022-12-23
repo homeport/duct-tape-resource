@@ -18,35 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main
+package dtr
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/gonvenience/bunt"
-	"github.com/gonvenience/neat"
-	"github.com/homeport/duct-tape-resource/internal/dtr"
+	"io"
 )
 
-func main() {
-	result, err := dtr.Check(os.Stdin)
+func In(in io.Reader) (InOutResult, error) {
+	config, err := LoadConfig(in)
 	if err != nil {
-		fmt.Fprint(os.Stderr, neat.ContentBox(
-			"Failed to run check",
-			err.Error(),
-			neat.HeadlineColor(bunt.LightCoral),
-		))
-
-		os.Exit(1)
+		return InOutResult{}, err
 	}
 
-	out, err := json.Marshal(result)
+	output, err := execute(config.Source.In)
 	if err != nil {
-		log.Fatal(err)
+		return InOutResult{}, err
 	}
 
-	fmt.Print(string(out))
+	return InOutResult{
+		Version:  config.Version,
+		Metadata: metadata(output),
+	}, nil
 }

@@ -4,18 +4,26 @@ Custom Concourse Resource to work as duct tape, meaning it can quickly bring thi
 
 ## Source Configuration
 
-* `check`: *Required.* The configuration to define what happens for `check`.
-  * `script`: *Required*. Command to be executed.
+* `check`: *Required* The configuration to define what happens for `check`.
+  * `env`: *Optional* List of key/value pairs that are set as environment variables in the context of the commands.
+  * `before`: *Optional* Command to be executed before the `run` command. Any output of this command will redirected to StdErr.
+  * `run`: *Required* Command to be executed.
 
-* `in`: *Required.* The configuration to define what happens for `in`.
+* `in`: *Required* The configuration to define what happens for `in`.
+  * `env`: *Optional* List of key/value pairs that are set as environment variables in the context of the commands.
+  * `before`: *Optional* Command to be executed before the `run` command. Any output of this command will redirected to StdErr.
+  * `run`: *Optional* Command to be executed. If undefined, it is considered a no-op.
 
-* `out`: *Required.* The configuration to define what happens for `out`.
+* `out`: *Required* The configuration to define what happens for `out`.
+  * `env`: *Optional* List of key/value pairs that are set as environment variables in the context of the commands.
+  * `before`: *Optional* Command to be executed before the `run` command. Any output of this command will redirected to StdErr.
+  * `run`: *Optional* Command to be executed. If undefined, it is considered a no-op.
 
 ### Example
 
 TBD:
 
-``` yaml
+```yaml
 resources:
 - name: foobar
   type: duct-tape
@@ -23,7 +31,7 @@ resources:
   check_every: 20m
   source:
     check:
-      script: |
+      run: |
         #!/bin/bash
         
         date +%Y-%m-%d-%H%M
@@ -39,21 +47,9 @@ TBD
 
 TBD
 
-#### Parameters
-
-* `something`: *Optional.* Something.
-
-* `else`: *Optional.* Else.
-
 ### `out`: TBD
 
 TBD
-
-#### Parameters
-
-* `yet`: *Required.* Yet.
-
-* `another`: *Optional.* Another.
 
 ## Development
 
