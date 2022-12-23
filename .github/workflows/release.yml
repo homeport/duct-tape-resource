@@ -23,6 +23,8 @@ jobs:
       env:
         REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         REGISTRY_USERNAME: ${{ github.repository_owner }}
+        DOCKER_BUILDKIT: "1"
+        BUILDKIT_PROGRESS: plain
       run: |
         docker login \
           --username "$REGISTRY_USERNAME" \
