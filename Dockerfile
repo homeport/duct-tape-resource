@@ -34,11 +34,11 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
       ./cmd/...
 
 
-FROM registry.access.redhat.com/ubi9-micro:latest
-
-# Make sure Go based applications find CA certs in the expected places
-# https://golang.org/src/crypto/x509/root_linux.go
-COPY --from=registry.access.redhat.com/ubi9-minimal:latest /etc/pki/ca-trust /etc/pki/ca-trust
-COPY --from=registry.access.redhat.com/ubi9-minimal:latest /etc/pki/tls /etc/pki/tls
+FROM registry.access.redhat.com/ubi9-minimal:latest
+RUN \
+    microdnf --refresh --assumeyes --best --nodocs --noplugins --setopt=install_weak_deps=0 upgrade && \
+    microdnf --assumeyes --nodocs install git jq && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum
 
 COPY --from=bootstrap /tmp/dist /
