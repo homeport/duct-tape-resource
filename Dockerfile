@@ -34,11 +34,11 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
       ./cmd/...
 
 
-FROM registry.access.redhat.com/ubi9-minimal:latest
+FROM ubuntu:latest
 RUN \
-    microdnf --refresh --assumeyes --best --nodocs --noplugins --setopt=install_weak_deps=0 upgrade && \
-    microdnf --assumeyes --nodocs install git jq && \
-    microdnf clean all && \
-    rm -rf /var/cache/yum
+    apt-get update && \
+    apt-get upgrade --yes && \
+    apt-get install --yes curl git jq && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=bootstrap /tmp/dist /
