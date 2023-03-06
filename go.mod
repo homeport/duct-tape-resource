@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/gonvenience/bunt v1.3.4
 	github.com/gonvenience/neat v1.3.11
-	github.com/onsi/ginkgo/v2 v2.8.3
+	github.com/onsi/ginkgo/v2 v2.9.0
 	github.com/onsi/gomega v1.27.1
 )
 
