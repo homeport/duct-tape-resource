@@ -6,7 +6,7 @@ require (
 	github.com/gonvenience/bunt v1.3.4
 	github.com/gonvenience/neat v1.3.11
 	github.com/onsi/ginkgo/v2 v2.9.2
-	github.com/onsi/gomega v1.27.5
+	github.com/onsi/gomega v1.27.6
 )
 
 require (
