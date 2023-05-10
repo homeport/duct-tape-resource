@@ -4,6 +4,7 @@ Custom Concourse Resource to work as duct tape, meaning it can quickly bring thi
 
 ## Source Configuration
 
+* `id`: *Optional* Use a custom identifier, if none is specified, `ref` is used as the default.
 * `check`: *Required* The configuration to define what happens for `check`.
   * `env`: *Optional* List of key/value pairs that are set as environment variables in the context of the commands.
   * `before`: *Optional* Command to be executed before the `run` command. Any output of this command will redirected to StdErr.
@@ -21,16 +22,24 @@ Custom Concourse Resource to work as duct tape, meaning it can quickly bring thi
 
 ### Example
 
-TBD:
+The following sample shows the main fields that can be used. For example, to define a generic check based on inline shell script, use `env` section to feed in variables (i.e. secrets) to the shell script. The code in `before` is only executed once for the resource. With each iteration of the Concourse check, the `run` section is executed.
 
 ```yaml
 resources:
 - name: foobar
-  type: duct-tape
+  type: duct-tape-resource
   icon: application-variable
   check_every: 20m
   source:
     check:
+      env:
+        FOO: ((bar))
+        SOME: variable
+      before: |
+        #!/bin/bash
+
+        echo "run something once before the checks"
+
       run: |
         #!/bin/bash
         
@@ -39,17 +48,17 @@ resources:
 
 ## Behavior
 
-### `check`: Check for TBD
+### `check`: Run custom check
 
-TBD
+When Concourse runs the check of the resource, the `run` section of the resource configuration will be executed. Each line of the output will treated as a value for the resource result JSON. For example, if the `check` `run` code prints `something` to StdOut, the output JSON will be `[{"ref": "something"}]`, with `ref` being the default identifier used if none is explicitly provided.
 
-### `in`: TBD
+### `in`: No-op
 
-TBD
+No-op.
 
-### `out`: TBD
+### `out`: No-op
 
-TBD
+No-op.
 
 ## Development
 
@@ -60,7 +69,11 @@ TBD
 
 ### Running the tests
 
-TBD.
+Run the `test` Make target to test the project:
+
+```sh
+make test
+```
 
 ### Contributing
 
