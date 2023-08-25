@@ -104,15 +104,15 @@ func execute(entry Custom) ([]string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	if entry.Run == "" {
+		return nil, fmt.Errorf("run command not specified. Bailing out")
+	}
+
 	if entry.Before != "" {
 		before := command(ctx, entry.Env, entry.Before, os.Stderr)
 		if err := before.Run(); err != nil {
 			return nil, fmt.Errorf("failure while running before command: %w", err)
 		}
-	}
-
-	if entry.Run == "" {
-		return nil, fmt.Errorf("run command not specified. Bailing out")
 	}
 
 	var outStream bytes.Buffer

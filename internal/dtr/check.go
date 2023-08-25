@@ -41,8 +41,13 @@ func Check(in io.Reader) (CheckResult, error) {
 	}
 
 	if len(result) == 0 {
-		// Only return the incoming version to signal concourse that there is nothing new
-		result = append(result, config.Version)
+		if config.Version != nil {
+			// Only return the incoming version to signal concourse that there is nothing new
+			result = append(result, config.Version)
+		} else {
+			// Return empty result as we don't have anything
+			result = CheckResult{}
+		}
 	}
 
 	return result, nil
