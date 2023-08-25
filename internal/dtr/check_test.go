@@ -29,7 +29,7 @@ import (
 
 var _ = Describe("Check", func() {
 	Context("invalid configuration", func() {
-		It("should fail if not run command is configured", func() {
+		It("should fail if no run command is configured", func() {
 			_, err := Check(feed(Config{}))
 			Expect(err).To(HaveOccurred())
 		})
@@ -46,14 +46,17 @@ var _ = Describe("Check", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
-		It("should fail when no line is return by run", func() {
-			_, err := Check(feed(Config{
+		It("should return provided version when no line is return by run", func() {
+			versionIn := Version{"ref": "barfoo"}
+			result, err := Check(feed(Config{
 				Source: Source{
 					Check: Custom{Run: "true"},
 				},
+				Version: versionIn,
 			}))
 
-			Expect(err).To(HaveOccurred())
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(Equal(CheckResult{versionIn}))
 		})
 
 		It("should return two versions when two lines are returned", func() {
