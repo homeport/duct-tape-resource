@@ -21,7 +21,6 @@
 package dtr
 
 import (
-	"fmt"
 	"io"
 )
 
@@ -42,7 +41,8 @@ func Check(in io.Reader) (CheckResult, error) {
 	}
 
 	if len(result) == 0 {
-		return nil, fmt.Errorf("run command returned no output")
+		// Only return the incoming version to signal concourse that there is nothing new
+		result = append(result, config.Version)
 	}
 
 	return result, nil
