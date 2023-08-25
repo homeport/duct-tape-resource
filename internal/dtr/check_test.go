@@ -59,6 +59,17 @@ var _ = Describe("Check", func() {
 			Expect(result).To(Equal(CheckResult{versionIn}))
 		})
 
+		It("should return empty result when no version is provided", func() {
+			result, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{Run: "true"},
+				},
+			}))
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(Equal(CheckResult{}))
+		})
+
 		It("should return two versions when two lines are returned", func() {
 			result, err := Check(feed(Config{
 				Source: Source{
@@ -71,6 +82,18 @@ var _ = Describe("Check", func() {
 				Version{"ref": "foobar"},
 				Version{"ref": "barfoo"},
 			}))
+		})
+
+		It("should just fail nicely if the run command was not provided", func() {
+			_, err := Check(feed(Config{
+				Source: Source{
+					Check: Custom{
+						Run: "",
+					},
+				},
+			}))
+
+			Expect(err).To(HaveOccurred())
 		})
 
 		It("should run before commands before returning a version", func() {
