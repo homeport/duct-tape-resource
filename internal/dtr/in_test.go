@@ -59,4 +59,24 @@ var _ = Describe("In", func() {
 			}))
 		})
 	})
+
+	Context("empty/no-op configuration", func() {
+		It("should not fail", func() {
+			_, err := In(feed(Config{}))
+
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should return given version", func() {
+			version := Version{"ref": "foobar"}
+			result, err := In(feed(Config{
+				Version: version,
+			}))
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result).To(Equal(InOutResult{
+				Version: version,
+			}))
+		})
+	})
 })
