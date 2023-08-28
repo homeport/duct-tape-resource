@@ -104,10 +104,6 @@ func execute(entry Custom) ([]string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if entry.Run == "" {
-		return nil, fmt.Errorf("run command not specified. Bailing out")
-	}
-
 	if entry.Before != "" {
 		before := command(ctx, entry.Env, entry.Before, os.Stderr)
 		if err := before.Run(); err != nil {
@@ -116,9 +112,16 @@ func execute(entry Custom) ([]string, error) {
 	}
 
 	var outStream bytes.Buffer
-	run := command(ctx, entry.Env, entry.Run, &outStream)
-	if err := run.Run(); err != nil {
-		return nil, fmt.Errorf("failure while running run command: %w", err)
+	// User does not always need to define Run
+	// e.g. user just implements Check but not In to trigger jobs
+	// In this scenario a user would still use get on the resource. Then In would be executed.
+	// For this scenario we would still like to allow no-op In runs
+	// Therefore we can skip command execution if nothing is defined
+	if entry.Run != "" {
+		run := command(ctx, entry.Env, entry.Run, &outStream)
+		if err := run.Run(); err != nil {
+			return nil, fmt.Errorf("failure while running run command: %w", err)
+		}
 	}
 
 	var result []string

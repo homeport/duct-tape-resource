@@ -21,11 +21,17 @@
 package dtr
 
 import (
+	"fmt"
 	"io"
 )
 
 func Check(in io.Reader) (CheckResult, error) {
 	config, err := LoadConfig(in)
+	if err != nil {
+		return nil, err
+	}
+
+	err = validateCheckConfig(config.Source.Check)
 	if err != nil {
 		return nil, err
 	}
@@ -51,4 +57,11 @@ func Check(in io.Reader) (CheckResult, error) {
 	}
 
 	return result, nil
+}
+
+func validateCheckConfig(c Custom) error {
+	if c.Run == "" {
+		return fmt.Errorf("run command not specified. Bailing out")
+	}
+	return nil
 }
