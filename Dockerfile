@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM golang:1.19 as bootstrap
+FROM golang:1.20 as bootstrap
 WORKDIR /go/src/github.com/homeport/duct-tape-resource
 COPY . .
 
@@ -28,10 +28,10 @@ ENV GOARCH amd64
 RUN --mount=type=cache,target=/root/.cache/go-build \
     mkdir -p /tmp/dist/opt/resource && \
     go build \
-      -trimpath \
-      -ldflags "-s -w -extldflags '-static'" \
-      -o /tmp/dist/opt/resource \
-      ./cmd/...
+    -trimpath \
+    -ldflags "-s -w -extldflags '-static'" \
+    -o /tmp/dist/opt/resource \
+    ./cmd/...
 
 
 FROM ubuntu:latest
