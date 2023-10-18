@@ -22,6 +22,17 @@ Custom Concourse Resource to work as duct tape, meaning it can quickly bring thi
 
 ### Example
 
+Since it is a custom resource type, it has to be configured once in the pipeline configuration.
+
+```yaml
+resource_types:
+- name: duct-tape-resource
+  type: docker-image
+  source:
+   repository: ghcr.io/homeport/duct-tape-resource
+   tag: latest
+```
+
 The following sample shows the main fields that can be used. For example, to define a generic check based on inline shell script, use `env` section to feed in variables (i.e. secrets) to the shell script. The code in `before` is only executed once for the resource. With each iteration of the Concourse check, the `run` section is executed.
 
 ```yaml
