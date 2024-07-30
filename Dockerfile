@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM golang:1.22 as bootstrap
+FROM golang:1.22.1 as bootstrap
 WORKDIR /go/src/github.com/homeport/duct-tape-resource
 COPY . .
 
@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     ./cmd/...
 
 
-FROM ubuntu:latest
+FROM ubuntu:latest@sha256:2e863c44b718727c860746568e1d54afd13b2fa71b160f5cd9058fc436217b30
 RUN \
     apt-get update && \
     apt-get upgrade --yes && \
