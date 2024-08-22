@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/gonvenience/bunt v1.3.5
 	github.com/gonvenience/neat v1.3.13
-	github.com/onsi/ginkgo/v2 v2.20.0
+	github.com/onsi/ginkgo/v2 v2.20.1
 	github.com/onsi/gomega v1.34.1
 )
 
