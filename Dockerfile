@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM golang:1.23.0 as bootstrap
+FROM golang:1.23.1 as bootstrap
 WORKDIR /go/src/github.com/homeport/duct-tape-resource
 COPY . .
 
