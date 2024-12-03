@@ -24,13 +24,13 @@ import (
 	"io"
 )
 
-func In(in io.Reader) (InOutResult, error) {
+func In(in io.Reader, args ...string) (InOutResult, error) {
 	config, err := LoadConfig(in)
 	if err != nil {
 		return InOutResult{}, err
 	}
 
-	output, err := execute(config.Source.In)
+	output, err := execute(config.Source.In, args...)
 	if err != nil {
 		return InOutResult{}, err
 	}

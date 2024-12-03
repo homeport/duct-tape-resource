@@ -58,6 +58,25 @@ var _ = Describe("In", func() {
 				{Name: "bar", Value: "foo"},
 			}))
 		})
+
+		It("should have access to the OS arguments", func() {
+			version := Version{"ref": "foobar"}
+			result, err := In(
+				feed(Config{
+					Source: Source{
+						In: Custom{Run: "echo foo $1"},
+					},
+					Version: version,
+				}),
+				"bar",
+			)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(result.Version).To(Equal(version))
+			Expect(result.Metadata).To(Equal([]Metadata{
+				{Name: "foo", Value: "bar"},
+			}))
+		})
 	})
 
 	Context("empty/no-op configuration", func() {

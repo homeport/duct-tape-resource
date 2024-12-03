@@ -32,7 +32,7 @@ import (
 )
 
 func main() {
-	result, err := dtr.In(os.Stdin)
+	result, err := dtr.In(os.Stdin, os.Args[1:]...)
 	if err != nil {
 		fmt.Fprint(os.Stderr, neat.ContentBox(
 			"Failed to run in",

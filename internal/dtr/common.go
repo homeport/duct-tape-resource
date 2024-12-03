@@ -86,8 +86,14 @@ func LoadConfig(in io.Reader) (*Config, error) {
 	return &config, nil
 }
 
-func command(ctx context.Context, envs map[string]string, run string, out io.Writer) *exec.Cmd {
-	cmd := exec.CommandContext(ctx, defaultCommand, "-c", run)
+func command(ctx context.Context, out io.Writer, envs map[string]string, run string, optArgs ...string) *exec.Cmd {
+	args := []string{"-c", run}
+	if len(optArgs) != 0 {
+		args = append(args, "--")
+		args = append(args, optArgs...)
+	}
+
+	cmd := exec.CommandContext(ctx, defaultCommand, args...)
 	cmd.Stdin = nil
 	cmd.Stdout = out
 	cmd.Stderr = os.Stderr
@@ -100,12 +106,12 @@ func command(ctx context.Context, envs map[string]string, run string, out io.Wri
 	return cmd
 }
 
-func execute(entry Custom) ([]string, error) {
+func execute(entry Custom, args ...string) ([]string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	if entry.Before != "" {
-		before := command(ctx, entry.Env, entry.Before, os.Stderr)
+		before := command(ctx, os.Stderr, entry.Env, entry.Before)
 		if err := before.Run(); err != nil {
 			return nil, fmt.Errorf("failure while running before command: %w", err)
 		}
@@ -118,7 +124,7 @@ func execute(entry Custom) ([]string, error) {
 	// For this scenario we would still like to allow no-op In runs
 	// Therefore we can skip command execution if nothing is defined
 	if entry.Run != "" {
-		run := command(ctx, entry.Env, entry.Run, &outStream)
+		run := command(ctx, &outStream, entry.Env, entry.Run, args...)
 		if err := run.Run(); err != nil {
 			return nil, fmt.Errorf("failure while running run command: %w", err)
 		}
@@ -137,11 +143,12 @@ func execute(entry Custom) ([]string, error) {
 func metadata(list []string) []Metadata {
 	var metadata []Metadata
 	for _, entry := range list {
-		split := strings.SplitN(entry, " ", 2)
-		metadata = append(metadata, Metadata{
-			Name:  split[0],
-			Value: split[1]},
-		)
+		if split := strings.SplitN(entry, " ", 2); len(split) == 2 {
+			metadata = append(metadata, Metadata{
+				Name:  split[0],
+				Value: split[1]},
+			)
+		}
 	}
 
 	return metadata
