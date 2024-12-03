@@ -18,13 +18,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-FROM golang:1.23.3 as bootstrap
+FROM golang:1.23.3 AS bootstrap
 WORKDIR /go/src/github.com/homeport/duct-tape-resource
 COPY . .
 
-ENV CGO_ENABLED 0
-ENV GOOS linux
-ENV GOARCH amd64
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
 RUN --mount=type=cache,target=/root/.cache/go-build \
     mkdir -p /tmp/dist/opt/resource && \
     go build \

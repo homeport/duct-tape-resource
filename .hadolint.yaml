@@ -1,0 +1,4 @@
+---
+ignored:
+- DL3008 # dismissed due to fear of additional maintenance
+- DL3015 # actually wanted behaviour
