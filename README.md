@@ -27,7 +27,7 @@ Since it is a custom resource type, it has to be configured once in the pipeline
 ```yaml
 resource_types:
 - name: duct-tape-resource
-  type: docker-image
+  type: registry-image
   source:
    repository: ghcr.io/homeport/duct-tape-resource
    tag: latest
