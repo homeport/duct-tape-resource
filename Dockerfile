@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     ./cmd/...
 
 
-FROM ubuntu:latest@sha256:278628f08d4979fb9af9ead44277dbc9c92c2465922310916ad0c46ec9999295
+FROM ubuntu:latest@sha256:80dd3c3b9c6cecb9f1667e9290b3bc61b78c2678c02cbdae5f0fea92cc6734ab
 RUN \
     apt-get update && \
     apt-get upgrade --yes && \
