@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"os"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -41,4 +42,15 @@ func feed(config Config) io.Reader {
 	data, err := json.Marshal(config)
 	Expect(err).ToNot(HaveOccurred())
 	return bytes.NewReader(data)
+}
+
+func withTempDir(f func(dir string)) {
+	GinkgoHelper()
+
+	dir, err := os.MkdirTemp("", "dtr")
+	Expect(err).ToNot(HaveOccurred())
+
+	f(dir)
+
+	os.RemoveAll(dir)
 }
