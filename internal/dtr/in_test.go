@@ -21,6 +21,9 @@
 package dtr_test
 
 import (
+	"os"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -76,6 +79,29 @@ var _ = Describe("In", func() {
 			Expect(result.Metadata).To(Equal([]Metadata{
 				{Name: "foo", Value: "bar"},
 			}))
+		})
+
+		It("should store the input version in a file", func() {
+			withTempDir(func(dir string) {
+				version := Version{"ref": "foobar"}
+				result, err := In(
+					feed(Config{
+						Source:  Source{In: Custom{Run: "true"}},
+						Version: version,
+					}),
+					dir,
+				)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(result.Version).To(Equal(version))
+
+				refFile := filepath.Join(dir, "ref")
+				Expect(refFile).To(BeAnExistingFile())
+
+				data, err := os.ReadFile(refFile)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(data).To(Equal([]byte("foobar")))
+			})
 		})
 	})
 
